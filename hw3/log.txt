@@ -1,0 +1,481 @@
+Script started on Sun 27 Jan 2019 01:14:53 PM UTC
+]0;vagrant@otuslinux:~[?1034h[vagrant@otuslinux ~]$ p[Kpvcreate /dev/sdb
+  WARNING: Running as a non-root user. Functionality may be unavailable.
+  /run/lvm/lvmetad.socket: access failed: Permission denied
+  WARNING: Failed to connect to lvmetad. Falling back to device scanning.
+  /run/lock/lvm/P_orphans:aux: open failed: Permission denied
+  Can't get lock for orphan PVs.
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ pvcreate /dev/sdb[1@s[1@u[1@d[1@o[1@ 
+  Physical volume "/dev/sdb" successfully created.
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ sudo pvcreate /dev/sdb[C[C[C[C[C[C[C[1P[1P[1@v[1@g[C[C[C[C[C[C[Cv/dev/sdbg/dev/sdbr/dev/sdbo/dev/sdbo/dev/sdb[1P/dev/sdb[1P/dev/sdb[1P/dev/sdb_/dev/sdbr/dev/sdbo/dev/sdbo/dev/sdbt/dev/sdb /dev/sdb
+  Volume group "vg_root" successfully created
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ lv[K[Ksudo lvcreate -n lv_root -l +100%FREE /dev/g[Kvg_root
+  Logical volume "lv_root" created.
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ sudo mkfs.xfs /dev.[K/vg_root/lvr[K_root
+meta-data=/dev/vg_root/lv_root   isize=512    agcount=4, agsize=655104 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=0, sparse=0
+data     =                       bsize=4096   blocks=2620416, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
+log      =internal log           bsize=4096   blocks=2560, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ su[Kudo mount /dev/vg_root/lv_root /mnt
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ sudo xfsdump -J - /dev/VolGroup00/LogVol00 | x[Ksudo xfsrestore -J - /mnt
+xfsrestore: using file dump (drive_simple) strategy
+xfsrestore: version 3.1.7 (dump format 3.0)
+xfsdump: using file dump (drive_simple) strategy
+xfsdump: version 3.1.7 (dump format 3.0)
+xfsdump: level 0 dump of otuslinux:/
+xfsdump: dump date: Sun Jan 27 13:16:22 2019
+xfsdump: session id: 3ec83941-0dfc-47d8-9ea3-a9910f51615b
+xfsdump: session label: ""
+xfsrestore: searching media for dump
+xfsdump: ino map phase 1: constructing initial dump list
+xfsdump: ino map phase 2: skipping (no pruning necessary)
+xfsdump: ino map phase 3: skipping (only one dump stream)
+xfsdump: ino map construction complete
+xfsdump: estimated dump size: 794831360 bytes
+xfsdump: creating dump session media file 0 (media 0, file 0)
+xfsdump: dumping ino map
+xfsdump: dumping directories
+xfsrestore: examining media file 0
+xfsrestore: dump description: 
+xfsrestore: hostname: otuslinux
+xfsrestore: mount point: /
+xfsrestore: volume: /dev/mapper/VolGroup00-LogVol00
+xfsrestore: session time: Sun Jan 27 13:16:22 2019
+xfsrestore: level: 0
+xfsrestore: session label: ""
+xfsrestore: media label: ""
+xfsrestore: file system id: b60e9498-0baa-4d9f-90aa-069048217fee
+xfsrestore: session id: 3ec83941-0dfc-47d8-9ea3-a9910f51615b
+xfsrestore: media id: 78faa889-4c18-4354-8dff-bf8a88197ac7
+xfsrestore: searching media for directory dump
+xfsrestore: reading directories
+xfsdump: dumping non-directory files
+xfsrestore: 3192 directories and 28203 entries processed
+xfsrestore: directory post-processing
+xfsrestore: restoring non-directory files
+xfsdump: ending media file
+xfsdump: media file size 764688192 bytes
+xfsdump: dump size (non-dir files) : 748685864 bytes
+xfsdump: dump complete: 11 seconds elapsed
+xfsdump: Dump Status: SUCCESS
+xfsrestore: restore complete: 11 seconds elapsed
+xfsrestore: Restore Status: SUCCESS
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ for[K[K[Kfor i in /proc/ /sys/ /dev/ /run/ /boot/; do mount --bind $i /mnt/$i; done[1@s[1@u[1@d[1@o[1@ 
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ chroot /mnt/
+chroot: cannot change root directory to /mnt/: Operation not permitted
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ chroot /mnt/[1@s[1@u[1@d[1@o[1@ 
+]0;root@otuslinux:/[?1034h[root@otuslinux /]# grub2-mkcof[Knfig -o /boot/grub2/grub.cfg 
+Generating grub configuration file ...
+Found linux image: /boot/vmlinuz-3.10.0-862.2.3.el7.x86_64
+Found initrd image: /boot/initramfs-3.10.0-862.2.3.el7.x86_64.img
+done
+]0;root@otuslinux:/[root@otuslinux /]# cd /boot ; for i in `ls initramfs-*img`; do dracut -v $i `echo $i|sed "s/initramfs-//g;
+> s/.img//g"` --force; done[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+Executing: /sbin/dracut -v initramfs-3.10.0-862.2.3.el7.x86_64.img 3.10.0-862.2.3.el7.x86_64 --force
+dracut module 'busybox' will not be installed, because command 'busybox' could not be found!
+dracut module 'crypt' will not be installed, because command 'cryptsetup' could not be found!
+dracut module 'dmraid' will not be installed, because command 'dmraid' could not be found!
+dracut module 'dmsquash-live-ntfs' will not be installed, because command 'ntfs-3g' could not be found!
+dracut module 'mdraid' will not be installed, because command 'mdadm' could not be found!
+dracut module 'multipath' will not be installed, because command 'multipath' could not be found!
+dracut module 'busybox' will not be installed, because command 'busybox' could not be found!
+dracut module 'crypt' will not be installed, because command 'cryptsetup' could not be found!
+dracut module 'dmraid' will not be installed, because command 'dmraid' could not be found!
+dracut module 'dmsquash-live-ntfs' will not be installed, because command 'ntfs-3g' could not be found!
+dracut module 'mdraid' will not be installed, because command 'mdadm' could not be found!
+dracut module 'multipath' will not be installed, because command 'multipath' could not be found!
+*** Including module: bash ***
+*** Including module: nss-softokn ***
+*** Including module: i18n ***
+*** Including module: drm ***
+*** Including module: plymouth ***
+*** Including module: dm ***
+Skipping udev rule: 64-device-mapper.rules
+Skipping udev rule: 60-persistent-storage-dm.rules
+Skipping udev rule: 55-dm.rules
+*** Including module: kernel-modules ***
+Omitting driver floppy
+*** Including module: lvm ***
+Skipping udev rule: 64-device-mapper.rules
+Skipping udev rule: 56-lvm.rules
+Skipping udev rule: 60-persistent-storage-lvm.rules
+*** Including module: qemu ***
+*** Including module: resume ***
+*** Including module: rootfs-block ***
+*** Including module: terminfo ***
+*** Including module: udev-rules ***
+Skipping udev rule: 40-redhat-cpu-hotplug.rules
+Skipping udev rule: 91-permissions.rules
+*** Including module: biosdevname ***
+*** Including module: systemd ***
+*** Including module: usrmount ***
+*** Including module: base ***
+*** Including module: fs-lib ***
+*** Including module: shutdown ***
+*** Including modules done ***
+*** Installing kernel module dependencies and firmware ***
+*** Installing kernel module dependencies and firmware done ***
+*** Resolving executable dependencies ***
+*** Resolving executable dependencies done***
+*** Hardlinking files ***
+*** Hardlinking files done ***
+*** Stripping files ***
+*** Stripping files done ***
+*** Generating early-microcode cpio image contents ***
+*** No early-microcode cpio image needed ***
+*** Store current command line parameters ***
+*** Creating image file ***
+*** Creating image file done ***
+*** Creating initramfs image file '/boot/initramfs-3.10.0-862.2.3.el7.x86_64.img' done ***
+]0;root@otuslinux:/boot[root@otuslinux boot]# vim /boot/grub2/grub.cfg 
+[?1049h[?1h=[2;1H▽[6n[1;1H  [1;1H[1;48r[?12;25h[?12l[?25h[27m[m[H[2J[?25l[48;1H"/boot/grub2/grub.cfg" 127L, 3658C[>c[1;1H[34m#
+# DO NOT EDIT THIS FILE
+#
+# It is automatically generated by grub2-mkconfig using templates
+# from /etc/grub.d and settings from /etc/default/grub
+#
+
+### BEGIN /etc/grub.d/00_header ###[m
+set pager=[31m1[m
+
+if [32m[ -s $prefix/grubenv ][m[34m; then[m
+  load_env
+fi
+if [32m[ "${next_entry}" ][m [34m; then[m
+   set default=[31m"${next_entry}"[m
+   set next_entry=
+   save_env next_entry
+   set boot_once=[38;5;130mtrue[m
+else
+   set default=[31m"${saved_entry}"[m
+fi
+
+if [32m[ x"${feature_menuentry_id}" = xy ][m[34m; then[m
+  menuentry_id_option=[31m"--id"[m
+else
+  menuentry_id_option=[31m""[m
+fi
+
+export menuentry_id_option
+
+if [32m[ "${prev_saved_entry}" ][m[34m; then[m
+  set saved_entry=[31m"${prev_saved_entry}"[m
+  save_env saved_entry
+  set prev_saved_entry=
+  save_env prev_saved_entry
+  set boot_once=[38;5;130mtrue[m
+fi
+
+function savedefault {
+  if [32m[ -z "${boot_once}" ][m[34m; then[m
+    saved_entry=[31m"${chosen}"[m
+    save_env saved_entry
+  fi
+}
+
+function load_video {
+  if [32m[ x$feature_all_video_module = xy ][m[34m; then[m[48;168H1,1[11CTop[1;1H[?12l[?25h[?25l[48;1H[K[48;1H/[?12l[?25hr[?25l[?12l[?25hd[?25l[?12l[?25h.[?25l[?12l[?25hl[?25l[?12l[?25hv[?25l[?12l[?25hm[?25l[?12l[?25h
+[?25l[27m[m[H[2J[1;3Hif [32m[ -n "${GRUB2_PASSWORD}" ][m[34m; then[m
+    set superusers=[31m"root"[m
+    export superusers
+    password_pbkdf2 root $[32m{GRUB2_PASSWORD}[m
+  fi
+fi
+[34m### END /etc/grub.d/01_users ###
+
+### BEGIN /etc/grub.d/10_linux ###[m
+menuentry 'CentOS Linux (3.10.0-862.2.3.el7.x86_64) 7 (Core)' --class centos --class gnu-linux --class gnu --class os --unrestricted $menuentry_id_option 'gnulinux-3.10.0-862.2.3.el7.x88[11;1H6_64-advanced-19d8f134-60ba-4a9a-ac64-6b1aec35b9ab' {[12;9Hload_video[13;9Hset gfxpayload=[31mkeep[m[14;9Hinsmod gzio[15;9Hinsmod part_msdos[16;9Hinsmod xfs[17;9Hset root=[31m'hd0,msdos2'[m[18;9Hif [32m[ x$feature_platform_search_hint = xy ][m[34m; then[m[19;11Hsearch --no-floppy --fs-uuid --set=[31mroot --hint-bios=hd0,msdos2 --hint-efi=hd0,msdos2 --hint-baremetal=ahci0,msdos2  570897ca-e759-4c81-90cf-389da6eee4cc[m[20;9Helse[21;11Hsearch --no-floppy --fs-uuid --set=[31mroot 570897ca-e759-4c81-90cf-389da6eee4cc[m[22;9Hfi[23;9Hlinux16 /vmlinuz-3.10.0-862.2.3.el7.x86_64 root=[31m/dev/mapper/vg_root-lv_root ro no_timer_check console=tty0 console=ttyS0,115200n8 net.ifnames=0 biosdevname=0 elevator=noop crashh[24;1Hkernel=auto [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol00 [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[25;9Hinitrd16 /initramfs-3.10.0-862.2.3.el7.x86_64.img
+}
+if [32m[ "x$default" = 'CentOS Linux (3.10.0-862.2.3.el7.x86_64) 7 (Core)' ][m[34m; then default='Advanced options for CentOS Linux>CentOS Linux (3.10.0-862.2.3.el7.x86_64) 7 (Core)'; fi;
+### END /etc/grub.d/10_linux ###
+
+### BEGIN /etc/grub.d/20_linux_xen ###
+### END /etc/grub.d/20_linux_xen ###
+
+### BEGIN /etc/grub.d/20_ppc_terminfo ###
+### END /etc/grub.d/20_ppc_terminfo ###
+
+### BEGIN /etc/grub.d/30_os-prober ###
+### END /etc/grub.d/30_os-prober ###
+
+### BEGIN /etc/grub.d/40_custom ###
+# This file provides an easy way to add custom menu entries.  Simply type the
+# menu entries you want to add after this comment.  Be careful not to change
+# the 'exec tail' line above.
+### END /etc/grub.d/40_custom ###
+
+### BEGIN /etc/grub.d/41_custom ###[m
+if [32m[ -f  ${config_directory}/custom.cfg ][m[34m; then[m
+  source $[32m{config_directory}[m/custom.cfg[48;168H100,191-198   95%[24;13H[?12l[?25h[?25l[48;174H2-199[24;14H[?12l[?25h[?25l[48;174H3-200[24;15H[?12l[?25h[?25l[48;174H4-201[24;16H[?12l[?25h[?25l[48;174H5-202[24;17H[?12l[?25h[?25l[48;174H6-203[24;18H[?12l[?25h[?25l[48;174H7-204[24;19H[?12l[?25h[?25l[48;174H8-205[24;20H[?12l[?25h[?25l[48;174H9-206[24;21H[?12l[?25h[?25l[48;172H200-207[24;22H[?12l[?25h[?25l[48;174H1-208[24;23H[?12l[?25h[?25l[48;174H2-209[24;24H[?12l[?25h[?25l[48;174H3-210[24;25H[?12l[?25h[?25l[48;174H4-211[24;26H[?12l[?25h[?25l[48;174H5-212[24;27H[?12l[?25h[?25l[48;174H6-213[24;28H[?12l[?25h[?25l[48;174H7-214[24;29H[?12l[?25h[?25l[48;174H8-215[24;30H[?12l[?25h[?25l[48;174H9-216[24;31H[?12l[?25h[?25l[48;173H10-217[24;32H[?12l[?25h[?25l[48;174H1-218[24;33H[?12l[?25h[?25l[48;174H2-219[24;34H[?12l[?25h[?25l[48;174H3-220[24;35H[?12l[?25h[?25l[48;174H4-221[24;36H[?12l[?25h[?25l[48;174H5-222[24;37H[?12l[?25h[?25l[48;174H6-223[24;38H[?12l[?25h[?25l[48;174H7-224[24;39H[?12l[?25h[?25l[48;174H8-225[24;40H[?12l[?25h[?25l[48;174H9-226[24;41H[?12l[?25h[?25l[48;173H20-227[24;42H[?12l[?25h[?25l[48;1H[1m-- INSERT --[m[48;168H[K[48;168H100,220-227   95%[24;42H[?12l[?25h[?25l[31m [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[24;83H[K[48;173H19-226[24;41H[?12l[?25h[?25l[31m [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[24;82H[K[48;174H8-225[24;40H[?12l[?25h[?25l[31m [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[24;81H[K[48;174H7-224[24;39H[?12l[?25h[?25l[31m [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[24;80H[K[48;174H6-223[24;38H[?12l[?25h[?25l[31m [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[24;79H[K[48;174H5-222[24;37H[?12l[?25h[?25l[31m [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[24;78H[K[48;174H4-221[24;36H[?12l[?25h[?25l[31m [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[24;77H[K[48;174H3-220[24;35H[?12l[?25h[?25l[31m [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[24;76H[K[48;174H2-219[24;34H[?12l[?25h[?25l[31m [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[24;75H[K[48;174H1-218[24;33H[?12l[?25h[?25l[31m [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[24;74H[K[48;174H0-217[24;32H[?12l[?25h[?25l[31m [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[24;73H[K[48;173H09-216[24;31H[?12l[?25h[?25l[31m [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[24;72H[K[48;174H8-215[24;30H[?12l[?25h[?25l[31m [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[24;71H[K[48;174H7-214[24;29H[?12l[?25h[?25l[31m [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[24;70H[K[48;174H6-213[24;28H[?12l[?25h[?25l[31m [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[24;69H[K[48;174H5-212[24;27H[?12l[?25h[?25l[31m [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[24;68H[K[48;174H4-211[24;26H[?12l[?25h[?25l[31m [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[24;67H[K[48;174H3-210[24;25H[?12l[?25h[?25l[31m [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[24;66H[K[48;174H2-209[24;24H[?12l[?25h[?25l[31m [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[24;65H[K[48;174H1-208[24;23H[?12l[?25h[?25l[31mv [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[48;174H2-209[24;24H[?12l[?25h[?25l[31mg [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[48;174H3-210[24;25H[?12l[?25h[?25l[31m_ [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[48;174H4-211[24;26H[?12l[?25h[?25l[31mr [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[48;174H5-212[24;27H[?12l[?25h[?25l[31mo [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[48;174H6-213[24;28H[?12l[?25h[?25l[31mo [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[48;174H7-214[24;29H[?12l[?25h[?25l[31mt [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[48;174H8-215[24;30H[?12l[?25h[?25l[31m/ [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[48;174H9-216[24;31H[?12l[?25h[?25l[31ml [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[48;173H10-217[24;32H[?12l[?25h[?25l[31mv [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[48;174H1-218[24;33H[?12l[?25h[?25l[31m_ [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[48;174H2-219[24;34H[?12l[?25h[?25l[31mr [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[48;174H3-220[24;35H[?12l[?25h[?25l[31mo [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[48;174H4-221[24;36H[?12l[?25h[?25l[31mo [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[48;174H5-222[24;37H[?12l[?25h[?25l[31mt [m[31m[103mrd.lvm[m[31m.lv=VolGroup00/LogVol01 rhgb quiet [m[48;174H6-223[24;38H[?12l[?25h[?25l[48;174H7-224[24;39H[?12l[?25h[?25l[48;174H8-225[24;40H[?12l[?25h[?25l[48;174H9-226[24;41H[?12l[?25h[?25l[48;173H20-227[24;42H[?12l[?25h[?25l[48;174H1-228[24;43H[?12l[?25h[?25l[48;174H2-229[24;44H[?12l[?25h[?25l[48;174H3-230[24;45H[?12l[?25h[?25l[48;174H4-231[24;46H[?12l[?25h[?25l[48;174H5-232[24;47H[?12l[?25h[?25l[48;174H6-233[24;48H[?12l[?25h[?25l[48;174H7-234[24;49H[?12l[?25h[?25l[48;174H8-235[24;50H[?12l[?25h[?25l[48;174H9-236[24;51H[?12l[?25h[?25l[48;173H30-237[24;52H[?12l[?25h[?25l[48;174H1-238[24;53H[?12l[?25h[?25l[48;174H2-239[24;54H[?12l[?25h[?25l[48;174H3-240[24;55H[?12l[?25h[?25l[48;174H4-241[24;56H[?12l[?25h[?25l[48;174H5-242[24;57H[?12l[?25h[?25l[48;174H6-243[24;58H[?12l[?25h[?25l[48;174H7-244[24;59H[?12l[?25h[?25l[48;174H8-245[24;60H[?12l[?25h[?25l[48;174H9-246[24;61H[?12l[?25h[?25l[48;173H40-247[24;62H[?12l[?25h[?25l[48;174H1-248[24;63H[?12l[?25h[?25l[48;174H2-249[24;64H[?12l[?25h[?25l[48;174H3-250[24;65H[?12l[?25h[?25l[48;174H4-251[24;66H[?12l[?25h[?25l[48;174H5-252[24;67H[?12l[?25h[?25l[48;174H6-253[24;68H[?12l[?25h[?25l[31m rhgb quiet [m[24;79H[K[48;174H5-252[24;67H[?12l[?25h[?25l[31m rhgb quiet [m[24;78H[K[48;174H4-251[24;66H[?12l[?25h[?25l[31m rhgb quiet [m[24;77H[K[48;174H3-250[24;65H[?12l[?25h[?25l[31m rhgb quiet [m[24;76H[K[48;174H2-249[24;64H[?12l[?25h[?25l[31m rhgb quiet [m[24;75H[K[48;174H1-248[24;63H[?12l[?25h[?25l[31m rhgb quiet [m[24;74H[K[48;174H0-247[24;62H[?12l[?25h[?25l[31m rhgb quiet [m[24;73H[K[48;173H39-246[24;61H[?12l[?25h[?25l[31m rhgb quiet [m[24;72H[K[48;174H8-245[24;60H[?12l[?25h[?25l[31m rhgb quiet [m[24;71H[K[48;174H7-244[24;59H[?12l[?25h[?25l[31m rhgb quiet [m[24;70H[K[48;174H6-243[24;58H[?12l[?25h[?25l[31m rhgb quiet [m[24;69H[K[48;174H5-242[24;57H[?12l[?25h[?25l[31m rhgb quiet [m[24;68H[K[48;174H4-241[24;56H[?12l[?25h[?25l[31m rhgb quiet [m[24;67H[K[48;174H3-240[24;55H[?12l[?25h[?25l[31m rhgb quiet [m[24;66H[K[48;174H2-239[24;54H[?12l[?25h[?25l[31m rhgb quiet [m[24;65H[K[48;174H1-238[24;53H[?12l[?25h[?25l[31m rhgb quiet [m[24;64H[K[48;174H0-237[24;52H[?12l[?25h[?25l[31m rhgb quiet [m[24;63H[K[48;173H29-236[24;51H[?12l[?25h[?25l[31m rhgb quiet [m[24;62H[K[48;174H8-235[24;50H[?12l[?25h[?25l[31m rhgb quiet [m[24;61H[K[48;174H7-234[24;49H[?12l[?25h[?25l[31mv rhgb quiet [m[48;174H8-235[24;50H[?12l[?25h[?25l[31mg rhgb quiet [m[48;174H9-236[24;51H[?12l[?25h[?25l[31m_ rhgb quiet [m[48;173H30-237[24;52H[?12l[?25h[?25l[31mr rhgb quiet [m[48;174H1-238[24;53H[?12l[?25h[?25l[31mo rhgb quiet [m[48;174H2-239[24;54H[?12l[?25h[?25l[31mo rhgb quiet [m[48;174H3-240[24;55H[?12l[?25h[?25l[31mt rhgb quiet [m[48;174H4-241[24;56H[?12l[?25h[?25l[31m/ rhgb quiet [m[48;174H5-242[24;57H[?12l[?25h[?25l[31ml rhgb quiet [m[48;174H6-243[24;58H[?12l[?25h[?25l[31mv rhgb quiet [m[48;174H7-244[24;59H[?12l[?25h[?25l[31m_ rhgb quiet [m[48;174H8-245[24;60H[?12l[?25h[?25l[31mr rhgb quiet [m[48;174H9-246[24;61H[?12l[?25h[?25l[31mo rhgb quiet [m[48;173H40-247[24;62H[?12l[?25h[?25l[31mo rhgb quiet [m[48;174H1-248[24;63H[?12l[?25h[?25l[31mt rhgb quiet [m[48;174H2-249[24;64H[?12l[?25h[48;1H[K[24;63H[?25l[48;168H100,241-248   95%[24;63H[?12l[?25h[?25l[48;168H[K[48;1H:[?12l[?25hw[?25l[?12l[?25hq[?25l[?12l[?25h
+[?25l"grub2/grub.cfg" 127L, 3650C written
+
+
+[?1l>[?12l[?25h[?1049l]0;root@otuslinux:/boot[root@otuslinux boot]# exit
+exit
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ exit
+exit
+
+Script done on Sun 27 Jan 2019 01:18:49 PM UTC
+
+Script started on Sun 27 Jan 2019 01:23:44 PM UTC
+]0;vagrant@otuslinux:~[?1034h[vagrant@otuslinux ~]$ lsblk
+NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda                       8:0    0   40G  0 disk 
+├─sda1                    8:1    0    1M  0 part 
+├─sda2                    8:2    0    1G  0 part /boot
+└─sda3                    8:3    0   39G  0 part 
+  ├─VolGroup00-LogVol00 253:1    0 37.5G  0 lvm  
+  └─VolGroup00-LogVol01 253:2    0  1.5G  0 lvm  [SWAP]
+sdb                       8:16   0   10G  0 disk 
+└─vg_root-lv_root       253:0    0   10G  0 lvm  /
+sdc                       8:32   0    2G  0 disk 
+sdd                       8:48   0    1G  0 disk 
+sde                       8:64   0    1G  0 disk 
+sdf                       8:80   0  256M  0 disk 
+sdg                       8:96   0  256M  0 disk 
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ lvr[K[K[Ksudo lvremove /dev/VolGroup00/LogVol00
+Do you really want to remove active logical volume VolGroup00/LogVol00? [y/n]: y
+  Logical volume "LogVol00" successfully removed
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ sudo lvcreate -n VolGroup/[K00/LogVol00 -L 8G /dev/VolGroup00
+WARNING: xfs signature detected on /dev/VolGroup00/LogVol00 at offset 0. Wipe it? [y/n]: y
+  Wiping xfs signature on /dev/VolGroup00/LogVol00.
+  Logical volume "LogVol00" created.
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ sudo mfk[K[Kkfs.xfs /dev/VolGroup00/LogVol00
+meta-data=/dev/VolGroup00/LogVol00 isize=512    agcount=4, agsize=524288 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=0, sparse=0
+data     =                       bsize=4096   blocks=2097152, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
+log      =internal log           bsize=4096   blocks=2560, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ sudo mount /dev/VolGroup00/LogVoll[K00 /mnt
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ xfsdump -j[KJ - /dev/vg_root/lv_root |
+[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[1@s[1@u[1@d[1@o[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[1@ [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C sudo xfsrestore -J - /mnt
+xfsdump: using file dump (drive_simple) strategy
+xfsdump: version 3.1.7 (dump format 3.0)
+xfsdump: level 0 dump of otuslinux:/
+xfsdump: dump date: Sun Jan 27 13:25:45 2019
+xfsdump: session id: 5e8f54f9-9c98-426c-8cb5-85e5b658ca62
+xfsdump: session label: ""
+xfsrestore: using file dump (drive_simple) strategy
+xfsrestore: version 3.1.7 (dump format 3.0)
+xfsdump: ino map phase 1: constructing initial dump list
+xfsrestore: searching media for dump
+xfsdump: ino map phase 2: skipping (no pruning necessary)
+xfsdump: ino map phase 3: skipping (only one dump stream)
+xfsdump: ino map construction complete
+xfsdump: estimated dump size: 793821568 bytes
+xfsdump: creating dump session media file 0 (media 0, file 0)
+xfsdump: dumping ino map
+xfsdump: dumping directories
+xfsrestore: examining media file 0
+xfsrestore: dump description: 
+xfsrestore: hostname: otuslinux
+xfsrestore: mount point: /
+xfsrestore: volume: /dev/mapper/vg_root-lv_root
+xfsrestore: session time: Sun Jan 27 13:25:45 2019
+xfsrestore: level: 0
+xfsrestore: session label: ""
+xfsrestore: media label: ""
+xfsrestore: file system id: 19d8f134-60ba-4a9a-ac64-6b1aec35b9ab
+xfsrestore: session id: 5e8f54f9-9c98-426c-8cb5-85e5b658ca62
+xfsrestore: media id: 99090ab3-3119-4fb1-9fd8-a77cd251e944
+xfsrestore: searching media for directory dump
+xfsrestore: reading directories
+xfsdump: dumping non-directory files
+xfsrestore: 3196 directories and 28209 entries processed
+xfsrestore: directory post-processing
+xfsrestore: restoring non-directory files
+xfsdump: ending media file
+xfsdump: media file size 763583232 bytes
+xfsdump: dump size (non-dir files) : 747576560 bytes
+xfsdump: dump complete: 12 seconds elapsed
+xfsdump: Dump Status: SUCCESS
+xfsrestore: restore complete: 12 seconds elapsed
+xfsrestore: Restore Status: SUCCESS
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$  for i in /proc/ /sys/ /dev/ /run/ /boot/; do mount --bind $i /mnt/$i; done
+mount: only root can use "--bind" option
+mount: only root can use "--bind" option
+mount: only root can use "--bind" option
+mount: only root can use "--bind" option
+mount: only root can use "--bind" option
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$  for i in /proc/ /sys/ /dev/ /run/ /boot/; do mount --bind $i /mnt/$i; done[1@ы[1@г[1@в[1@щ[1@ [1P[1P[1P[1P[1P[1@ [1@ы[1@г[1P[1P[1P[1@s[1@u[1@d[1@o[1@ 
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ sudo chroot /mnt/
+]0;root@otuslinux:/[?1034h[root@otuslinux /]# sudo grub2-mkconfig -o /boot/grub
+grub/  grub2/ 
+[root@otuslinux /]# sudo grub2-mkconfig -o /boot/grub2/grub.cfg 
+Generating grub configuration file ...
+Found linux image: /boot/vmlinuz-3.10.0-862.2.3.el7.x86_64
+Found initrd image: /boot/initramfs-3.10.0-862.2.3.el7.x86_64.img
+done
+]0;root@otuslinux:/[root@otuslinux /]# cd /boot ; for i in `ls initramfs-*img`; do dracut -v $i `echo $i|sed "s/initramfs-//g;
+> s/.img//g"` --force; done
+Executing: /sbin/dracut -v initramfs-3.10.0-862.2.3.el7.x86_64.img 3.10.0-862.2.3.el7.x86_64 --force
+dracut module 'busybox' will not be installed, because command 'busybox' could not be found!
+dracut module 'crypt' will not be installed, because command 'cryptsetup' could not be found!
+dracut module 'dmraid' will not be installed, because command 'dmraid' could not be found!
+dracut module 'dmsquash-live-ntfs' will not be installed, because command 'ntfs-3g' could not be found!
+dracut module 'mdraid' will not be installed, because command 'mdadm' could not be found!
+dracut module 'multipath' will not be installed, because command 'multipath' could not be found!
+dracut module 'busybox' will not be installed, because command 'busybox' could not be found!
+dracut module 'crypt' will not be installed, because command 'cryptsetup' could not be found!
+dracut module 'dmraid' will not be installed, because command 'dmraid' could not be found!
+dracut module 'dmsquash-live-ntfs' will not be installed, because command 'ntfs-3g' could not be found!
+dracut module 'mdraid' will not be installed, because command 'mdadm' could not be found!
+dracut module 'multipath' will not be installed, because command 'multipath' could not be found!
+*** Including module: bash ***
+*** Including module: nss-softokn ***
+*** Including module: i18n ***
+*** Including module: drm ***
+*** Including module: plymouth ***
+*** Including module: dm ***
+Skipping udev rule: 64-device-mapper.rules
+Skipping udev rule: 60-persistent-storage-dm.rules
+Skipping udev rule: 55-dm.rules
+*** Including module: kernel-modules ***
+Omitting driver floppy
+sudo pvcreate /dev*** Including module: lvm ***
+/Skipping udev rule: 64-device-mapper.rules
+Skipping udev rule: 56-lvm.rules
+Skipping udev rule: 60-persistent-storage-lvm.rules
+s*** Including module: qemu ***
+*** Including module: resume ***
+*** Including module: rootfs-block ***
+*** Including module: terminfo ***
+*** Including module: udev-rules ***
+Skipping udev rule: 40-redhat-cpu-hotplug.rules
+Skipping udev rule: 91-permissions.rules
+*** Including module: biosdevname ***
+*** Including module: systemd ***
+*** Including module: usrmount ***
+*** Including module: base ***
+*** Including module: fs-lib ***
+*** Including module: shutdown ***
+*** Including modules done ***
+*** Installing kernel module dependencies and firmware ***
+*** Installing kernel module dependencies and firmware done ***
+*** Resolving executable dependencies ***
+*** Resolving executable dependencies done***
+*** Hardlinking files ***
+*** Hardlinking files done ***
+*** Stripping files ***
+*** Stripping files done ***
+*** Generating early-microcode cpio image contents ***
+*** No early-microcode cpio image needed ***
+*** Store current command line parameters ***
+*** Creating image file ***
+*** Creating image file done ***
+*** Creating initramfs image file '/boot/initramfs-3.10.0-862.2.3.el7.x86_64.img' done ***
+]0;root@otuslinux:/boot[root@otuslinux boot]# sudo pvcreate /dev/sdc /sed[K[K[Kdev/sdd
+  Physical volume "/dev/sdc" successfully created.
+  Physical volume "/dev/sdd" successfully created.
+]0;root@otuslinux:/boot[root@otuslinux boot]# sudo vgcreate vg_var /dev/sdc /dev/sdc[Kd
+  Volume group "vg_var" successfully created
+]0;root@otuslinux:/boot[root@otuslinux boot]# lvc[K[K[Ksudo lvcreate -l[KL 950M -m1 -n lv_varv[K vg_var
+  Rounding up size to full physical extent 952.00 MiB
+  Logical volume "lv_var" created.
+]0;root@otuslinux:/boot[root@otuslinux boot]# mf[Kkfs.e[Ksmkfs.umkfs.dmkfs.omkfs. mkfs.[C[C[C[C[Cext4 /de /[K[Kv/vg
+vga_arbiter  vg_root/     vg_var/      
+[root@otuslinux boot]# sudo mkfs.ext4 /dev/vg_var/lv_vvar[K[K[Kar /mnt
+mke2fs 1.42.9 (28-Dec-2013)
+mkfs.ext4: invalid blocks '/mnt' on device '/dev/vg_var/lv_var'
+]0;root@otuslinux:/boot[root@otuslinux boot]# sudo mkfs.ext4 /dev/vg_var/lv_var /mnt[K[K[K[K[K
+mke2fs 1.42.9 (28-Dec-2013)
+Filesystem label=
+OS type: Linux
+Block size=4096 (log=2)
+Fragment size=4096 (log=2)
+Stride=0 blocks, Stripe width=0 blocks
+60928 inodes, 243712 blocks
+12185 blocks (5.00%) reserved for the super user
+First data block=0
+Maximum filesystem blocks=249561088
+8 block groups
+32768 blocks per group, 32768 fragments per group
+7616 inodes per group
+Superblock backups stored on blocks: 
+	32768, 98304, 163840, 229376
+
+Allocating group tables: 0/8   done                            
+Writing inode tables: 0/8   done                            
+Creating journal (4096 blocks): done
+Writing superblocks and filesystem accounting information: 0/8   done
+
+]0;root@otuslinux:/boot[root@otuslinux boot]# sudo mkfs.ext4 /dev/vg_var/lv_var /mnt
+[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[1P[1P[1P[1P[1P[1P[1P[1P[1P[1P[1P[1P[1P[1P[1@m[1@o[1@u[1@n[1@t[1@s[1@u[1@d[1@o[1@ 
+]0;root@otuslinux:/boot[root@otuslinux boot]# sudo cp -A[KaR /var/* /mnt [K/
+]0;root@otuslinux:/boot[root@otuslinux boot]# sudo mkdir /tmp/0[Koldvar && sudo mv /var/* .[K/tmp/oldvar
+]0;root@otuslinux:/boot[root@otuslinux boot]# sudo umount /mnt
+]0;root@otuslinux:/boot[root@otuslinux boot]# sudo mount /dev/vg_var/lv_var /var
+]0;root@otuslinux:/boot[root@otuslinux boot]# su ech[K[K[K[Kdo echo  "`blkid | grep var: | awk '{print $2}'` /var ext4 defaults 0 0" >> /etc/fstab
+[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[1@s[1@u[1@d[1@o[1@ 
+]0;root@otuslinux:/boot[root@otuslinux boot]# exit
+exit
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ exit
+exit
+
+Script done on Sun 27 Jan 2019 01:32:04 PM UTC
+[vagrant@otuslinux ~]$ lvremove /dev/vg_root/lv_root
+  WARNING: Running as a non-root user. Functionality may be unavailable.
+  /run/lvm/lvmetad.socket: access failed: Permission denied
+  WARNING: Failed to connect to lvmetad. Falling back to device scanning.
+  /dev/mapper/control: open failed: Permission denied
+  Failure to communicate with kernel device-mapper driver.
+  Incompatible libdevmapper 1.02.146-RHEL7 (2018-01-22) and kernel driver (unknown version).
+  /run/lock/lvm/V_vg_root:aux: open failed: Permission denied
+  Can't get lock for vg_root
+  Cannot process volume group vg_root
+[vagrant@otuslinux ~]$ sudo lvremove /dev/vg_root/lv_root
+Do you really want to remove active logical volume vg_root/lv_root? [y/n]: y
+  Logical volume "lv_root" successfully removed
+[vagrant@otuslinux ~]$ sudo vgremove /dev/vg_root
+  Volume group "vg_root" successfully removed
+[vagrant@otuslinux ~]$ sudo pvremove /dev/sdb
+  Labels on physical volume "/dev/sdb" successfully wiped.
+Script started on Sun 27 Jan 2019 01:38:45 PM UTC
+]0;vagrant@otuslinux:~[?1034h[vagrant@otuslinux ~]$ ;v[K[Klvcreateslvcreateulvcreatedlvcreateolvcreate lvcreate[C[C[C[C[C[C[C[C -n LogVol_Home -L 2G /dev.[K/VolGroup00
+  Logical volume "LogVol_Home" created.
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ s[Ksudo mkfs.xfs /dev/VolGroup00/LogVol_Home 
+meta-data=/dev/VolGroup00/LogVol_Home isize=512    agcount=4, agsize=131072 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=0, sparse=0
+data     =                       bsize=4096   blocks=524288, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
+log      =internal log           bsize=4096   blocks=2560, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ sudo mount /dev/VolGroup00/LogVol_Home /mnt/
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ sudo cp -aR /home/* /mnt/
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ rm -rf /home[K/[Ke/*
+rm: cannot remove ‘/home/vagrant’: Permission denied
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ rm -rf /home/*[1@s[1@u[1@d[1@o[1@ 
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ sudo umount /n[Kmnt
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ sudo mount /dev/VolGroup00/LogVol_Home /home/
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ echo "`blkid | grep Home | awk '{print $2}'` /home xfs defaults 0 0" >> /etc/fstab[1P /etc/fstab[1P /etc/fstab| /etc/fstab[C /etc/fstabs /etc/fstabu /etc/fstabd /etc/fstabo /etc/fstab[C /etc/fstabt /etc/fstabe /etc/fstabe /etc/fstab[C /etc/fstab- /etc/fstab[C /etc/fstaba /etc/fstab[1P /etc/fstab[1P/etc/fstaba /etc/fstab
+[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[1@s[1@y[1P[1@u[1@d[1@o[1@ 
+UUID="cae9294d-866b-4162-b096-f4eb25dff9f2" /home xfs defaults 0 0
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ sudo touch /home/file{1..20}
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ sudo lvcreate -L 100MB -s -n home_sb[Knap /dev/VolGroup00/LogVol_h[Khome
+  Snapshot origin LV LogVol_home not found in Volume group VolGroup00.
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ sudo lvcreate -L 100MB -s -n home_snap /dev/VolGroup00/LogVol_home[1PomeHome
+  Rounding up size to full physical extent 128.00 MiB
+  Logical volume "home_snap" created.
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ rm -f[1@s[1@u[1@d[1@o[1@ [C[C[C[C[C /home/file{11..20}
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ sudo umount /home
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ sudo lvconvert --merge /dev/VolGroup00/home_snap
+  Merging of volume VolGroup00/home_snap started.
+  VolGroup00/LogVol_Home: Merged: 100.00%
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ sudo mount /home
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ exit
+exit
+
+Script done on Sun 27 Jan 2019 01:42:52 PM UTC
