@@ -1,0 +1,67 @@
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+
+MACHINES = {
+  :otuslinux => {
+        :box_name => "centos/7",
+        :ip_addr => '192.168.56.11'
+  },
+}
+
+Vagrant.configure("2") do |config|
+
+  MACHINES.each do |boxname, boxconfig|
+
+      config.vm.define boxname do |box|
+
+          box.vm.box = boxconfig[:box_name]
+          box.vm.host_name = boxname.to_s
+
+          #box.vm.network "forwarded_port", guest: 3260, host: 3260+offset
+
+          box.vm.network "private_network", ip: boxconfig[:ip_addr]
+
+          box.vm.provider :virtualbox do |vb|
+            vb.customize ["modifyvm", :id, "--memory", "1024"]          
+          box.vm.provision "shell", inline: <<-SHELL
+                    mkdir -p ~root/.ssh
+                    cp ~vagrant/.ssh/auth* ~root/.ssh
+                    yum -y groupinstall "Development Tools" readline
+                    yum install -y \
+                    redhat-lsb-core \
+                    wget \
+                    rpmdevtools \
+                    rpm-build \
+                    createrepo \
+                    yum-utils \
+                    git
+                    yum -y install epel-release
+                    yum -y install luajit-devel.x86_64
+                    wget https://nginx.org/packages/centos/7/SRPMS/nginx-1.14.1-1.el7_4.ngx.src.rpm
+                    rpm -i nginx-1.14.1-1.el7_4.ngx.src.rpm
+                    git clone git://github.com/flavioribeiro/nginx-audio-track-for-hls-module.git
+                    git clone git://github.com/chaoslawful/lua-nginx-module.git
+                    rpm -Uvh http://li.nux.ro/download/nux/dextop/el7/x86_64/nux-dextop-release-0-5.el7.nux.noarch.rpm
+                    yum -y install ffmpeg ffmpeg-devel
+                    wget https://transfer.sh/O9BNQ/nginx-1.14.1-1.el7_4.ngx.x86_64.rpm
+                    yum localinstall -y nginx-1.14.1-1.el7_4.ngx.x86_64.rpm
+                    systemctl start nginx
+                    mkdir /usr/share/nginx/html/repo
+                    cp nginx-1.14.1-1.el7_4.ngx.x86_64.rpm /usr/share/nginx/html/repo/
+                    wget http://www.percona.com/downloads/percona-release/redhat/0.1-6/percona-release-0.1-6.noarch.rpm -O /usr/share/nginx/html/repo/percona-release-0.1-6.noarch.rpm
+                    createrepo /usr/share/nginx/html/repo/
+                    nginx -s reload
+                    cat >> /etc/yum.repos.d/otus.repo << EOF
+                    [otus]
+                    name=otus-linux
+                    baseurl=http://localhost/repo
+                    gpgcheck=0
+                    enabled=1
+                    EOF
+                SHELL
+          end
+
+      end
+  end
+end
+
